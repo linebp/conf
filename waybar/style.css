@@ -1,78 +1,160 @@
+@import "./themes/mocha.css";
+
+/* Global */
 * {
-	font-size: 20px;
-	font-family: monospace;
+  font-family: "FiraCode Nerd Font", "FontAwesome6Free";
+  font-size: 1rem;
+  border-radius: 1.2rem;
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  background-color: shade(@base, 0.9);
 }
 
+@keyframes blink_red {
+  to {
+    background-color: @red;
+    color: @base;
+  }
+}
+
+.warning, .critical, .urgent {
+  animation-name: blink_red;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+#mode, #clock, #memory, #temperature, #cpu, #custom-weather,
+#mpd, #idle_inhibitor, #backlight, #pulseaudio, #network, 
+#battery, #custom-powermenu, #custom-cava-internal,
+#custom-launcher, #tray, #disk, #custom-pacman, #custom-scratchpad-indicator {
+  padding-left: .6rem;
+  padding-right: .6rem;
+}
+
+/* Bar */
 window#waybar {
-	background: #002b36;
-	color: #839496;
+  background-color: transparent;
 }
 
-#custom-right-arrow-dark,
-#custom-left-arrow-dark {
-	/* color: #292b2e; */
-	color: #073642;
-}
-#custom-right-arrow-light,
-#custom-left-arrow-light {
-	/* color: #002b36; */
-	/* background: #292b2e; */
-	background: #073642;
-	color: #002b36;
+window > box {
+  background-color: transparent;
+  margin: .3rem;
+  margin-bottom: 0;
 }
 
-#workspaces,
-#clock.1,
-#clock.2,
-#clock.3,
-#pulseaudio,
-#memory,
-#cpu,
-#battery,
-#disk,
-#tray {
-	background: #073642;
-	/* background: #292b2e; */
+
+/* Workspaces */
+#workspaces:hover {
+  background-color: @green;
 }
 
 #workspaces button {
-	padding: 0 2px;
-	color: #839496;
-}
-#workspaces button.focused {
-	color: #d33682;
-}
-#workspaces button:hover {
-	box-shadow: inherit;
-	text-shadow: inherit;
-}
-#workspaces button:hover {
-	background: #002b36;
-	border: #002b36;
-	padding: 0 3px;
+  padding-right: .4rem;
+  padding-left: .4rem;
+  padding-top: .1rem;
+  padding-bottom: .1rem;
+  color: @red;
+  /* border: .2px solid transparent; */
+  background: transparent;
 }
 
-#pulseaudio {
-	color: #268bd2;
+#workspaces button.focused {
+  color: @blue;
 }
-#Memory {
-	color: #2aa198;
+
+#workspaces button:hover {
+  /* border: .2px solid transparent; */
+  color: @rosewater;
+}
+
+/* Tooltip */
+tooltip {
+  background-color: @base;
+}
+
+tooltip label {
+  color: @rosewater;
+}
+
+/* battery */
+#battery {
+  color: @mauve;
+}
+#battery.full {
+  color: @green;
+}
+#battery.charging{
+  color: @teal;
+}
+#battery.discharging {
+  color: @peach;
+}
+#battery.critical:not(.charging) {
+  color: @pink;
+}
+#custom-powermenu {
+  color: @red;
+}
+
+/* mpd */
+#mpd.paused {
+  color: @pink;
+  font-style: italic;
+}
+#mpd.stopped {
+  color: @rosewater;
+  /* background: transparent; */
+}
+#mpd {
+  color: @lavender;
+}
+
+/* Extra */
+#custom-cava-internal{
+  color: @peach;
+  padding-right: 1rem;
+}
+#custom-launcher {
+  color: @yellow;
+}
+#memory {
+  color: @peach;
 }
 #cpu {
-	color: #6c71c4;
+  color: @blue;
 }
-#battery {
-	color: #859900;
+#clock {
+  color: @rosewater;
+}
+#idle_inhibitor {
+  color: @green;
+}
+#temperature {
+  color: @sapphire;
+}
+#backlight {
+  color: @green;
+}
+#pulseaudio {
+  color: @mauve;  /* not active */
+}
+#network {
+  color: @pink; /* not active */
+}
+#network.disconnected {
+  color: @foreground;  /* not active */
 }
 #disk {
-	color: #b58900;
+  color: @maroon;
 }
-
-#clock,
-#pulseaudio,
-#memory,
-#cpu,
-#battery,
-#disk {
-	padding: 0 10px;
+#custom-pacman{
+  color: @sky;
+}
+#custom-scratchpad-indicator {
+  color: @yellow
+}
+#custom-weather {
+  color: @red;
 }
