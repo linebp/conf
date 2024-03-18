@@ -1,15 +1,8 @@
 {
   "modules-left": [
-    "sway/workspaces",
-    "custom/scratchpad-indicator",
-    "idle_inhibitor",
-    "sway/mode",
+    "sway/workspaces"
   ],
-  "sway/mode": {
-    "format": " {}"
-  },
   "modules-center": [
-    "clock",
   ],
   "modules-right": [
     "pulseaudio",
@@ -19,40 +12,37 @@
     "cpu",
     "temperature",
     "battery",
+    "bluetooth",
     "tray",
-    "custom/powermenu",
+    "clock",
+    "custom/lock",
+    "custom/exit",
   ],
   "sway/workspaces": {
     "disable-scroll": true,
     "active-only": true,
   },
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "",
-      "deactivated": "󰛑"
-    },
-    "tooltip": false
-  },
+
+"bluetooth": {
+	"format": "<span color=\"#ffb86c\"></span> {status}",
+	"format-connected": " {num_connections}",
+	"tooltip-format": "{controller_alias}\t{controller_address}",
+	"tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
+	"tooltip-format-enumerate-connected": "{device_alias}\t{device_address}"
+},
   "disk": {
     "interval": 30,
-    "format": " {used}",
-    "path": "/home",
-    "tooltip": true,
-    "tooltip-format": "{used}/{total} => {path} {percentage_used}%",
+    "format": "<span color=\"#ffb86c\"></span> {used}",
+    "path": "/",
+    "tooltip": true
   },
   "pulseaudio": {
-    "format": "{icon}{volume:2}%",
-    "format-bluetooth": "{icon} {volume:2}% ",
+    "format": "<span color=\"#ffb86c\">{icon}</span> {volume:2}%",
     "format-muted": "󰸈",
     "format-icons": {
-      "headphones": "",
+      "headphone": "",
       "speaker": "󰓃",
-      "default": [
-        "󰕿",
-        "󰖀",
-        "󰕾"
-      ]
+      "default": ["󰕿", "󰖀", "󰕾"]
     },
     "scroll-step": 1,
     "on-click": "pamixer -t",
@@ -64,53 +54,70 @@
       "warning": 20,
       "critical": 10
     },
-    "format": "{icon} {capacity}%",
-    "format-icons": [
-    "󰁺",
-    "󰁻",
-    "󰁼",
-    "󰁽",
-    "󰁾",
-    "󰁿",
-    "󰂀",
-    "󰂁",
-    "󰂂"
-    ],
+    "format": "<span color=\"#ffb86c\">{icon}</span> {capacity:3}%",
+    "format-charging": "<span color=\"#ffb86c\">{icon}󱐋</span> {capacity:2}%",
+    "format-full": "<span color=\"#ffb86c\">{icon}</span> {capacity:3}%",
+    "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
     "tooltip": true,
   },
   "clock": {
-    "interval": 1,
-    "format": "{:%I:%M %p  %A %b %d}",
+    "timezone": "Europe/Paris",
+    "format": "<span color=\"#ffb86c\">󰅐</span> {:%H:%M}",
     "tooltip": true,
     "tooltip-format": "{:%A, %d %B %Y}\n<tt>{calendar}</tt>"
   },
   "memory": {
     "on-click": "kitty btm",
     "interval": 1,
-    "format": "󰍛 {percentage}%",
+    "format": "<span color=\"#ffb86c\">󰍛</span> {percentage:2}%",
     "states": {
       "warning": 85,
     },
   },
   "cpu": {
     "interval": 1,
-    "format": " {usage}%"
+    "format": "<span color=\"#ffb86c\"></span> {usage:2}%"
   },
   "network": {
     "interval": 1,
-    "format-wifi": "󰖩 {essid}",
-    "format-ethernet": "󰈀  {ifname} ({ipaddr})",
-    "format-disconnected": "󰌙 Disconnected",
-    "tooltip": false
+    "format-wifi": "<span color=\"#ffb86c\">{icon}</span> {essid}",
+    "format-icons": ["󰣴", "󰣶", "󰣸", "󰣺"],
+    "format-ethernet": "<span color=\"#ffb86c\">󰈀</span> {ifname}",
+    "format-disconnected": "<span color=\"#ffb86c\">󰌙</span> Disconnected",
+    "tooltip-format": "{ifname}\n{ipaddr}/{cidr} via {gwaddr}\n󰁞 {bandwidthUpBits}  󰁆 {bandwidthDownBits}",
+    "tooltip-format-disconnected": "Disconnected",
   },
   "temperature": {
     "critical-threshold": 80,
     "tooltip": false,
-    "format": " {temperatureC}°C"
+    "format": "<span color=\"#ffb86c\"></span> {temperatureC:2}°C"
   },
-  "custom/powermenu": {
-    "format": "",
-    "on-click": "~/.config/rofi/powermenu.sh",
+  "group/powermenu": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 500,
+      "children-class": "not-power",
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "custom/power",
+      "custom/lock",
+      "custom/reboot",
+    ],
+  },
+  "custom/exit": {
+    "format": "<span color=\"#ff5555\">󰐥</span> ",
+    "on-click": "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Logout' 'swaymsg exit' -B 'Reboot' 'systemctl reboot' -B 'Power off' 'systemctl poweroff'",
+    "tooltip": true
+  },
+  "custom/reboot": {
+    "format": "<span color=\"#ff5555\">󰜉</span>",
+    "on-click": "systemctl reboot",
+    "tooltip": false
+  },
+  "custom/lock": {
+    "format": "<span color=\"#ff5555\">󰌾</span> ",
+    "on-click": "swaylock",
     "tooltip": false
   },
   "tray": {

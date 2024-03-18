@@ -123,10 +123,14 @@
 
 ;; zenburn-theme for Emacs
 ;; https://github.com/bbatsov/zenburn-emacs
-(use-package zenburn-theme
+;; (use-package zenburn-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'zenburn t))
+(use-package dracula-theme
   :ensure t
   :config
-  (load-theme 'zenburn t))
+  (load-theme 'dracula t))
 
 ;; Minibuffer completion is essential to your Emacs workflow and
 ;; Vertico is currently one of the best out there. There's a lot to
