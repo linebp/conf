@@ -1,21 +1,5 @@
 ;;; init.el --- Emacs configuration -*- lexical-binding: t -*-
 
-;;; Commentary:
-
-;; Save the contents of this file to ~/.config/emacs/init.el and
-;; you're ready to boot up Emacs.
-
-;; Hack this file! One of the best ways to get started with Emacs is
-;; to look at other peoples' configurations and extract the pieces
-;; that work for you. That's where this configuration started. I
-;; encourage you to read through the code in this file and explore the
-;; functions and variables using the built-in help system (details
-;; below). Happy hacking!
-
-;; "C-<chr>  means hold the CONTROL key while typing the character <chr>.
-;; Thus, C-f would be: hold the CONTROL key and type f." (Emacs tutorial)
-;;
-;; - C-h t: Start the Emacs tutorial
 ;; - C-h o some-symbol: Describe symbol
 ;; - C-h C-q: Pull up the quick-help cheatsheet
 
@@ -127,10 +111,14 @@
 ;;   :ensure t
 ;;   :config
 ;;   (load-theme 'zenburn t))
-(use-package dracula-theme
+;; (use-package dracula-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'dracula t))
+(use-package nord-theme
   :ensure t
   :config
-  (load-theme 'dracula t))
+  (load-theme 'nord t))
 
 ;; Minibuffer completion is essential to your Emacs workflow and
 ;; Vertico is currently one of the best out there. There's a lot to
@@ -313,13 +301,16 @@
   (add-hook 'after-init-hook 'global-company-mode))
 
 
-(use-package treesit-auto
+;; Syntax checking
+(use-package flycheck
   :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
+  :init (global-flycheck-mode))
+
+(use-package flycheck-eglot
+  :ensure t
+  :after (flycheck eglot)
   :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (global-flycheck-eglot-mode 1))
 
 
 ;; (use-package pyvenv
@@ -346,3 +337,5 @@
 ;;   :config
 ;;   (add-hook 'python-mode-hook 'highlight-indent-guides-mode)
 ;;   (setq highlight-indent-guides-method 'character))
+
+;;; init.el ends here

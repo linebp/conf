@@ -1,81 +1,78 @@
-@import "./themes/dracula.css";
+@import "./themes/nord.css";
 
-/* Global */
 * {
-  font-family: "FiraCode Nerd Font";
-  font-size: 1rem;
-  border-radius: 1.2rem;
-  transition-property: background-color;
-  transition-duration: 0.5s;
-  background-color: shade(@background-darker, 0.9);
-  color: @foreground;
+    border: none;
+    font-family: "FiraCode Nerd Font";
+    font-size: 16px;
+    min-height: 0;
 }
 
-@keyframes blink_red {
-  to {
-    background-color: @red;
-    color: @background-darker;
-  }
-}
-
-.warning, .critical, .urgent {
-  animation-name: blink_red;
-  animation-duration: 1s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-}
-
-#mode, #clock, #memory, #temperature, #cpu, #custom-weather,
-#mpd, #idle_inhibitor, #backlight, #pulseaudio, #network, 
-#battery, #custom-powermenu, #custom-cava-internal, #group-powermenu, #custom-power,
-#custom-reboot, #custom-lock,
-#custom-launcher, #tray, #disk, #custom-pacman, #custom-scratchpad-indicator {
-  padding-left: .6rem;
-  padding-right: .6rem;
-}
-
-/* Bar */
 window#waybar {
-  background-color: transparent;
+    background-color: rgba(59, 66, 82, 0.8);
+    color: @nord4;
+}
+.module {
+    background-color: @nord0;
+    color: @nord9;
+    margin: 5px;
+    border-radius: 16px;
+    /* margin-left: 5px; */
+    /* margin-right: 5px; */
+    /* padding: 0px 10px 0px 10px; */
+    padding: 5px 10px;
+    /* font-weight: bold;       */
+    /* padding-left: .6rem; */
+    /* padding-right: .6rem; */
 }
 
-window > box {
-  background-color: transparent;
-  margin: .3rem;
-  margin-bottom: 0;
+window#waybar {
+    background-color: rgba(76,86,106,0.8);
 }
 
-
-/* Workspaces */
-#workspaces:hover {
-  background-color: @green;
+#workspaces {
+    padding: 1px;
+    /* background-color: rgba(76,86,106,0.9); */
+    background-color: @nord9;
+    /* background-color: @nord1; */
 }
 
 #workspaces button {
-  padding-right: .4rem;
-  padding-left: .4rem;
-  padding-top: .1rem;
-  padding-bottom: .1rem;
-  color: @selection;
-  /* border: .2px solid transparent; */
-  background: transparent;
+    color: @nord4;
+    padding: 1px 5px;
+    border-radius: 16px;
 }
-
 #workspaces button.focused {
-  color: @pink;
+    background-color: @nord1;
+    /* background-color: #cdd6f4; */
+    /* border-radius: 16px; */
+    /* background-size: 400% 400%; */
+    /* transition: all 0.3s ease-in-out; */
+}
+#workspaces button:hover {
+    box-shadow: inherit;
+    background-color: @nord4;
+    /* border-radius: 16px; */
+    /* min-width: 50px; */
+    /* background-size: 400% 400%; */
 }
 
-#workspaces button:hover {
-  /* border: .2px solid transparent; */
-  color: @foreground;
-}
 
 /* Tooltip */
 tooltip {
-  background-color: @background-darker;
+  background-color: @nord1;
 }
 
 tooltip label {
-  color: @foreground;
+  color: @nord4;
+}
+
+
+#battery.warning:not(.charging) {
+    background: #f53c3c;
+    color: white;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
 }
