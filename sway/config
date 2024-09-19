@@ -6,7 +6,7 @@ font pango:FireCode Nerd Font Regular 4px
 
 default_border pixel 1
 gaps inner  0
-gaps outer  30
+gaps outer  3
 smart_borders on
 # smart_gaps on
 
@@ -66,7 +66,7 @@ exec dbus-daemon --session --address=unix:path=$XDG_RUNTIME_DIR/bus &
 # exec mako
 # exec swaycons
 # exec fcitx5
-exec_always  --no-startup-id  swaybg -i ~/Downloads/3382294.jpg
+exec_always  --no-startup-id  swaybg -i ~/Downloads/11356475.png
 # exec_always  --no-startup-id  nm-applet --indicator &
 # exec_always  --no-startup-id  syncthing &
 # exec_always  --no-startup-id  autotiling-rs &
@@ -256,6 +256,8 @@ bindsym Shift+Ctrl+Up            resize grow   height 5 px or 5 ppt
 bindsym Shift+Ctrl+Down          resize shrink height 5 px or 5 ppt
 bindsym Shift+Ctrl+Right         resize grow   width  5 px or 5 ppt
 
-bar {
-    swaybar_command waybar
-}
+exec waybar -c ~/.config/waybar/config-sway
+
+# bar {
+#     swaybar_command waybar
+# }

@@ -1,78 +1,171 @@
-@import "./themes/nord.css";
+/* Don't edit this file, modify styleoptions.css if you want to change color */
 
 * {
-    border: none;
-    font-family: "FiraCode Nerd Font";
-    font-size: 16px;
-    min-height: 0;
+  border: none;
+  font-family: FantasqueSansM Nerd Font Mono;
+  font-size: 14px;
 }
 
-window#waybar {
-    background-color: rgba(59, 66, 82, 0.8);
-    color: @nord4;
-}
-.module {
-    background-color: @nord0;
-    color: @nord9;
-    margin: 5px;
-    border-radius: 16px;
-    /* margin-left: 5px; */
-    /* margin-right: 5px; */
-    /* padding: 0px 10px 0px 10px; */
-    padding: 5px 10px;
-    /* font-weight: bold;       */
-    /* padding-left: .6rem; */
-    /* padding-right: .6rem; */
+#leftside,
+#centerbottom {
+  background-color: @bg-color;
+  border-radius: 18px;
+  margin: 4px 4px 4px 4px;
 }
 
-window#waybar {
-    background-color: rgba(76,86,106,0.8);
+#custom-poweroff,
+#custom-sleep,
+#custom-exit {
+  font-size: 30px;
+  padding: 0px 6px 0px 6px;
 }
 
-#workspaces {
-    padding: 1px;
-    /* background-color: rgba(76,86,106,0.9); */
-    background-color: @nord9;
-    /* background-color: @nord1; */
+#user label {
+  font-size: 18px;
+  padding: 0px 6px 0px 6px;
+}
+
+#rightside {
+  background-color: @bg-color;
+  border-radius: 18px;
+  margin: 4px 8px 4px 4px;
+  color: @fg-color;
+}
+
+#traygroup {
+  background-color: @tray-bg-color;
+  border-radius: 0px 18px 18px 0px;
+  color: @tray-fg-color;
+  padding-right: 16px;
+}
+
+#traygroup.generic {
+  margin-left: 8px;
+}
+
+#custom-timeprefix,
+#custom-cpuprefix,
+#custom-dateprefix,
+#custom-memoryprefix,
+#network.statusprefix,
+#mpris.prefix,
+#network.dnlprefix,
+#custom-cc,
+#network.uplprefix {
+  font-family: FantasqueSansM Nerd Font Mono;
+  font-size: 26px;
+  padding-right: 7px;
+}
+
+#battery.prefix {
+  padding-right: 7px;
+}
+
+#mpris.prefix {
+  padding-left: 3px;
+}
+
+#pulseaudio {
+  font-size: 14px;
+}
+
+#custom-trayright {
+  padding-right: 4px;
+}
+
+window {
+  /* background: @fg-color; */
+  background: rgba(30, 30, 46, 0);
+  color: @fg-color;
+}
+
+#window {
+  margin: 4px 0px 4px 0px;
+}
+
+#window,
+#clock.centered {
+  border-radius: 18px;
+  /*background: @bg-color;*/
+  background: @bg-color;
+  padding: 3px;
+  font-weight: Bold;
+  margin: 4px 4px 4px 4px;
+}
+
+#tray {
+  padding: 0px 0px 0px 6px;
+}
+
+window#waybar.empty #window,
+window#waybar.solo #window {
+  background: transparent;
+}
+
+window#waybar.floating,
+window#waybar.tiled {
+  background: transparent;
+}
+
+/* dynamic color for some apps */
+
+#mpris,
+#mode {
+  color: @fg-color;
+}
+
+#mpris.suffix {
+  border-radius: 0px 18px 18px 0px;
+  padding-right: 4px;
+}
+
+#custom-barpadding {
+  font-size: 0px;
+  color: transparent;
+}
+
+#workspaces,
+#custom-app {
+  all: initial;
+  padding: 3px;
+  color: @fg-color;
+}
+
+#mode {
+  border-radius: 18px;
+  padding: 0px 6px;
+  margin-left: 3px;
+}
+
+#custom-app {
+  font-family: FantasqueSansM Nerd Font;
+  font-size: 14px;
 }
 
 #workspaces button {
-    color: @nord4;
-    padding: 1px 5px;
-    border-radius: 16px;
-}
-#workspaces button.focused {
-    background-color: @nord1;
-    /* background-color: #cdd6f4; */
-    /* border-radius: 16px; */
-    /* background-size: 400% 400%; */
-    /* transition: all 0.3s ease-in-out; */
-}
-#workspaces button:hover {
-    box-shadow: inherit;
-    background-color: @nord4;
-    /* border-radius: 16px; */
-    /* min-width: 50px; */
-    /* background-size: 400% 400%; */
+  all: initial;
+  padding: 0px 9px 0px 8px;
+  background: transparent;
+  border-radius: 18px;
+  color: @fg-color;
 }
 
-
-/* Tooltip */
-tooltip {
-  background-color: @nord1;
+#workspaces button.focused,
+#workspaces button.active,
+#workspaces button.visible,
+#workspaces button.empty {
+  background: @selected-bg-color;
+  color: @selected-fg-color;
 }
 
-tooltip label {
-  color: @nord4;
+#clock {
+  padding: 0 8px 0 0;
 }
 
-
-#battery.warning:not(.charging) {
-    background: #f53c3c;
-    color: white;
-    animation-name: blink;
-    animation-duration: 0.5s;
-    animation-timing-function: steps(12);
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+#network.uplprefix,
+#mpris.prefix,
+#network.cpuprefixoff {
+  border-radius: 18px 0px 0px 18px;
 }
+
+@import url("styleoptions.css");
