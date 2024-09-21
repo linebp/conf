@@ -2,7 +2,7 @@
 
 * {
   border: none;
-  font-family: FantasqueSansM Nerd Font Mono;
+  font-family: FiraCode Nerd Font Mono;
   font-size: 14px;
 }
 
@@ -52,7 +52,7 @@
 #network.dnlprefix,
 #custom-cc,
 #network.uplprefix {
-  font-family: FantasqueSansM Nerd Font Mono;
+  font-family: FiraCode Nerd Font Mono;
   font-size: 26px;
   padding-right: 7px;
 }
@@ -138,7 +138,7 @@ window#waybar.tiled {
 }
 
 #custom-app {
-  font-family: FantasqueSansM Nerd Font;
+  font-family: FiraCode Nerd Font Mono;
   font-size: 14px;
 }
 

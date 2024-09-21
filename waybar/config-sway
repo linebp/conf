@@ -12,8 +12,14 @@
   ],
   "sway/window": {
     "format": " {} ",
-    "max-length": 100,
-    "tooltip": false
+    "max-length": 75,
+    "tooltip": false,
+    "all-outputs": true,
+    "icon": true,
+    "rewrite": {
+      "(.*) - Mozilla Firefox *": "$1",
+      "(.*) at localhost.localdomain *": "$1  "
+    }
   },
   "sway/workspaces": {
     "format": "{icon}",
