@@ -1,4 +1,4 @@
-;;; init.el --- Emacs configuration -*- lexical-binding: t -*-
+;;; init.el --- Emacs configuration 
 
 ;; - C-h o some-symbol: Describe symbol
 ;; - C-h C-q: Pull up the quick-help cheatsheet
@@ -9,9 +9,7 @@
 (setq gc-cons-threshold 100000000) ; 100 mb
 (setq read-process-output-max (* 1024 1024)) ; 1mb
 
-;; Added release date of emacs 30.2
-(setq elpaca-core-date '(20250814))
-(defvar elpaca-installer-version 0.10)
+(defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -46,9 +44,50 @@
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
+
+;; Added release date of emacs 30.2
+; (setq elpaca-core-date '(20250814))
+;; (defvar elpaca-installer-version 0.10)
+;; (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+;; (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+;; (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+;; (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+;;                               :ref nil :depth 1 :inherit ignore
+;;                               :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+;;                               :build (:not elpaca--activate-package)))
+;; (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+;;        (build (expand-file-name "elpaca/" elpaca-builds-directory))
+;;        (order (cdr elpaca-order))
+;;        (default-directory repo))
+;;   (add-to-list 'load-path (if (file-exists-p build) build repo))
+;;   (unless (file-exists-p repo)
+;;     (make-directory repo t)
+;;     (when (<= emacs-major-version 28) (require 'subr-x))
+;;     (condition-case-unless-debug err
+;;         (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+;;                   ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+;;                                                   ,@(when-let* ((depth (plist-get order :depth)))
+;;                                                       (list (format "--depth=%d" depth) "--no-single-branch"))
+;;                                                   ,(plist-get order :repo) ,repo))))
+;;                   ((zerop (call-process "git" nil buffer t "checkout"
+;;                                         (or (plist-get order :ref) "--"))))
+;;                   (emacs (concat invocation-directory invocation-name))
+;;                   ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+;;                                         "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+;;                   ((require 'elpaca))
+;;                   ((elpaca-generate-autoloads "elpaca" repo)))
+;;             (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+;;           (error "%s" (with-current-buffer buffer (buffer-string))))
+;;       ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+;;   (unless (require 'elpaca-autoloads nil t)
+;;     (require 'elpaca)
+;;     (elpaca-generate-autoloads "elpaca" repo)
+;;     (load "./elpaca-autoloads")))
+;; (add-hook 'after-init-hook #'elpaca-process-queues)
+;; (elpaca `(,@elpaca-order))
 
 
 ;; Install use-package support
@@ -61,7 +100,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
-(set-face-attribute 'default nil :font "fira code" :height 120)
+;; (set-face-attribute 'default nil :font "fira code" :height 120)
 
 ;; Add unique buffer names in the minibuffer where there are many
 ;; identical files. This is super useful if you rely on folders for
@@ -200,27 +239,22 @@
   ;; (corfu-popupinfo-mode)
   )
 
-;; (use-package corfu
-;;   :ensure t
-;;   :init
-;;   (global-corfu-mode)
-;;   :custom
-;;   (corfu-auto t)
-;;   ;; You may want to play with delay/prefix/styles to suit your preferences.
-;;   (corfu-auto-delay 0)
-;;   (corfu-auto-prefix 0)
-;;   (completion-styles '(basic)))
 
-;; open python files in tree-sitter mode
-(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+;; Install newer version of flymake (eglot))
+(use-package flymake :ensure t)
 
 ;; Adds LSP support. Note that you must have the respective LSP
 ;; server installed on your machine to use it with Eglot. e.g.
 ;; rust-analyzer to use Eglot with `rust-mode'.
-
+;; xref-find-definitions
+;;     M-. to find the definition of the identifier at point.
+;; xref-go-back
+;;     M-, to return back to where you invoked the xref-find-definitions command.
+;; xref-find-references
+;;     M-? to find references to the identifier at point. 
 (use-package eglot
   :ensure t
-  :defer t
+  :after (flymake)  
   :bind (:map eglot-mode-map
               ("C-c C-d" . eldoc)
               ("C-c C-e" . eglot-rename)
@@ -230,20 +264,14 @@
          (python-ts-mode . flyspell-prog-mode)
          (python-ts-mode . superword-mode)
          (python-ts-mode . hs-minor-mode)
-         (python-ts-mode . (lambda () (set-fill-column 88)))
-         ((rust-mode nix-mode) . eglot-ensure))
+         (python-ts-mode . (lambda () (set-fill-column 88))))
   :config
-  (add-to-list 'eglot-server-programs
-                       `(rust-mode . ("rust-analyzer" :initializationOptions
-                                     ( :procMacro (:enable t)
-                                       :cargo ( :buildScripts (:enable t)
-                                                :features "all")))))
   (setq-default eglot-workspace-configuration
                 '((:pylsp . (:configurationSources ["flake8"]
                              :plugins (
                                        :pycodestyle (:enabled :json-false)
                                        :mccabe (:enabled :json-false)
-                                       :pyflakes (:enabled :json-false)
+                                       :pyflakes (:enabled t)
                                        :flake8 (:enabled :json-false
                                                 :maxLineLength 88)
                                        :ruff (:enabled t
@@ -255,9 +283,6 @@
                                        :black (:enabled t
                                                :line_length 88
                                                :cache_config t)))))))
-
-(use-package cape
-  :ensure t)
 
 ;; Add extra context to Emacs documentation to help make it easier to
 ;; search and understand. This configuration uses the keybindings 
@@ -277,26 +302,27 @@
 ;; text, though I recommend giving `org-mode' a try if you've never
 ;; used it before. The Denote manual is also excellent:
 ;; https://protesilaos.com/emacs/denote
-(use-package denote
-  :ensure t
-  :custom
-  (denote-known-keywords '("emacs" "journal"))
-  ;; This is the directory where your notes live.
-  (denote-directory (expand-file-name "~/denote/"))
-  :bind
-  (("C-c n n" . denote)
-   ("C-c n f" . denote-open-or-create)
-   ("C-c n i" . denote-link)))
+;; (use-package denote
+;;   :ensure t
+;;   :custom
+;;   (denote-known-keywords '("emacs" "journal"))
+;;   ;; This is the directory where your notes live.
+;;   (denote-directory (expand-file-name "~/denote/"))
+;;   :bind
+;;   (("C-c n n" . denote)
+;;    ("C-c n f" . denote-open-or-create)
+;;    ("C-c n i" . denote-link)))
 
-(use-package transient
-  :ensure t)
+;; Installing newer version of transient for magit
+(use-package transient :ensure t)
 
-;; An extremely feature-rich git client. Activate it with "C-c g".
+;; An extremely feature-rich git client
 (use-package magit
   :ensure t
-  :after transient
+  :after (transient)
   :bind (("C-c g" . magit-status)))
 
+;; Headerline indication of where you are
 (use-package breadcrumb
   :ensure t
   :init (breadcrumb-mode))
@@ -322,12 +348,6 @@
 ;;          (lisp-interaction-mode . enable-paredit-mode)
 ;;          (scheme-mode . enable-paredit-mode)))
 
-(use-package go-mode
-  :ensure t
-  :bind (:map go-mode-map
-	      ("C-c C-f" . 'gofmt))
-  :hook (before-save . gofmt-before-save))
-
 (use-package markdown-mode
   :ensure t
   ;; These extra modes help clean up the Markdown editing experience.
@@ -340,43 +360,36 @@
   (setq markdown-command "multimarkdown"))
 
 
-(use-package rust-mode
-  :ensure t
-  :init
-  (setq rust-mode-treesitter-derive t)
-  (setq rust-format-on-save t))
-  ;; :bind (:map rust-mode-map))
-  ;;             ("C-c C-r" . 'rust-run)
-  ;;             ("C-c C-c" . 'rust-compile)
-  ;;             ("C-c C-f" . 'rust-format-buffer)
-  ;;             ("C-c C-t" . 'rust-test))
-  ;; :hook (rust-mode . prettify-symbols-mode))
-
-(use-package flycheck-rust
-  :ensure t
-  :hook (rust-mode-hook . flycheck-rust-setup))
-
-
-;; (elpaca
-;;   (rustowlsp
-;;     :host github
-;;     :repo "cordx56/rustowl"
-;;     :files (:defaults "emacs/*")))
-;; (use-package rustowlsp
-;;   :ensure (:host github :repo "cordx56/rustowl" :files (:defaults "emacs/*")))
-
-
-
 (use-package toml-mode :ensure)
 
 
 (use-package yaml-mode :ensure t)
 
-;; Installing company mode
+;; Company is a text and code completion framework for Emacs. The name
+;; stands for "complete anything". It uses pluggable back-ends and
+;; front-ends to retrieve and display completion candidates.
 (use-package company
   :ensure t
   :config
-  (add-hook 'after-init-hook 'global-company-mode))
+  (add-hook 'after-init-hook 'global-company-mode)  
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 2)
+  (setq company-show-numbers t)
+  ;; To prevent default down-casing.
+  ;; https://emacs.stackexchange.com/questions/10837/how-to-make-company-mode-be-case-sensitive-on-plain-text
+  (setq company-dabbrev-downcase nil)
+  ;; 2023-01-13 From a Reddit post on mixed case issue.
+  (setq company-dabbrev-ignore-case nil)
+  (setq company-dabbrev-code-ignore-case nil))
+
+
+;;;; PYTHON
+;; install the following: black, pylsp, ruff, pycodestyle
+;; install tree-sitter grammar for python
+;; Set the python interpreter
+(setq python-interpreter "python3")
+;; open python files in tree-sitter mode
+(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
 
 
 ;; Syntax checking
@@ -438,30 +451,5 @@
   ;; useful beyond Corfu.
   (read-extended-command-predicate #'command-completion-default-include-p))
 
-
-;; (use-package pyvenv
-;;   :ensure t
-;;   :config
-;;   (pyvenv-mode 1))
-
-;; (use-package anaconda-mode
-;;   :ensure t
-;;   :bind (("C-c C-x" . next-error))
-;;   :config
-;;   (require 'pyvenv)
-;;   (add-hook 'python-mode-hook 'anaconda-mode))
-;; (setq url-http-attempt-keepalives nil)
-
-;; (use-package company-anaconda
-;;   :ensure t
-;;   :config
-;;   (eval-after-load "company"
-;;    '(add-to-list 'company-backends '(company-anaconda :with company-capf))))
-
-;; (use-package highlight-indent-guides
-;;   :ensure t
-;;   :config
-;;   (add-hook 'python-mode-hook 'highlight-indent-guides-mode)
-;;   (setq highlight-indent-guides-method 'character))
 
 ;;; init.el ends here
