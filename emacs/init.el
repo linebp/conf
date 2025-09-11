@@ -9,6 +9,53 @@
 (setq gc-cons-threshold 100000000) ; 100 mb
 (setq read-process-output-max (* 1024 1024)) ; 1mb
 
+;; Added release date of emacs 30.2
+(setq elpaca-core-date '(20250814))
+(defvar elpaca-installer-version 0.10)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+
+;; Install use-package support
+(elpaca elpaca-use-package
+  ;; Enable use-package :ensure support for Elpaca.
+  (elpaca-use-package-mode))
+
 ;; Remove extra UI clutter by hiding the scrollbar, menubar, and toolbar.
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -64,29 +111,6 @@
       ;; separate file, custom.el, to keep your init.el clean.
       custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-;; Bring in package utilities so we can install packages from the web.
-(require 'package)
-
-;; Add MELPA, an unofficial (but well-curated) package registry to the
-;; list of accepted package registries. By default Emacs only uses GNU
-;; ELPA and NonGNU ELPA, https://elpa.gnu.org/ and
-;; https://elpa.nongnu.org/ respectively.
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-
-(package-initialize)
-
-;; Unless we've already fetched (and cached) the package archives,
-;; refresh them.
-;; (unless package-archive-contents
-;;   (package-refresh-contents))
-(package-refresh-contents t)
-
-;; Add the :vc keyword to use-package, making it easy to install
-;; packages directly from git repositories.
-(unless (package-installed-p 'vc-use-package)
-  (package-vc-install "https://github.com/slotThe/vc-use-package"))
-(require 'vc-use-package)
-
 ;; A quick primer on the `use-package' function (refer to
 ;; "C-h f use-package" for the full details).
 ;;
@@ -98,31 +122,24 @@
 ;;   :custom      ; Set these variables
 ;;   :config      ; Run this code after my-package is loaded
 
-;; A package with a great selection of themes:
-;; https://protesilaos.com/emacs/ef-themes
-;; (use-package ef-themes
-;;   :ensure t
-;;   :config
-;;   (ef-themes-select 'ef-autumn))
 
-;; zenburn-theme for Emacs
-;; https://github.com/bbatsov/zenburn-emacs
-;; (use-package catppuccin-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'catppuccin t))
-(use-package zenburn-theme
+(use-package auto-package-update
   :ensure t
   :config
-  (load-theme 'zenburn t))
-;; (use-package dracula-theme
+  (setq auto-package-update-delete-old-versions t)
+  (setq auto-package-update-hide-results t)
+  (auto-package-update-maybe))
+
+(use-package dracula-theme
+  :ensure t
+  :config
+  (load-theme 'dracula t))
+
+
+;; (use-package zenburn-theme
 ;;   :ensure t
 ;;   :config
-;;   (load-theme 'dracula t))
-;; (use-package nord-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'nord t))
+;;   (load-theme 'zenburn t))
 
 ;; Minibuffer completion is essential to your Emacs workflow and
 ;; Vertico is currently one of the best out there. There's a lot to
@@ -155,18 +172,52 @@
 ;; solution.
 (use-package corfu
   :ensure t
-  :init
-  (global-corfu-mode)
+  ;; Optional customizations
   :custom
   (corfu-auto t)
-  ;; You may want to play with delay/prefix/styles to suit your preferences.
-  (corfu-auto-delay 0)
-  (corfu-auto-prefix 0)
-  (completion-styles '(basic)))
+  (completion-styles '(basic))
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  (corfu-preview-current nil)    ;; Disable current candidate preview
+  (corfu-preselect 'prompt)      ;; Preselect the prompt
+  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+
+  ;; Enable Corfu only for certain modes. See also `global-corfu-modes'.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  :init
+
+  ;; Recommended: Enable Corfu globally.  Recommended since many modes provide
+  ;; Capfs and Dabbrev can be used globally (M-/).  See also the customization
+  ;; variable `global-corfu-modes' to exclude certain modes.
+  (global-corfu-mode)
+
+  ;; Enable optional extension modes:
+  ;; (corfu-history-mode)
+  ;; (corfu-popupinfo-mode)
+  )
+
+;; (use-package corfu
+;;   :ensure t
+;;   :init
+;;   (global-corfu-mode)
+;;   :custom
+;;   (corfu-auto t)
+;;   ;; You may want to play with delay/prefix/styles to suit your preferences.
+;;   (corfu-auto-delay 0)
+;;   (corfu-auto-prefix 0)
+;;   (completion-styles '(basic)))
+
+;; open python files in tree-sitter mode
+(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
 
 ;; Adds LSP support. Note that you must have the respective LSP
 ;; server installed on your machine to use it with Eglot. e.g.
 ;; rust-analyzer to use Eglot with `rust-mode'.
+
 (use-package eglot
   :ensure t
   :defer t
@@ -179,8 +230,14 @@
          (python-ts-mode . flyspell-prog-mode)
          (python-ts-mode . superword-mode)
          (python-ts-mode . hs-minor-mode)
-         (python-ts-mode . (lambda () (set-fill-column 88))))
+         (python-ts-mode . (lambda () (set-fill-column 88)))
+         ((rust-mode nix-mode) . eglot-ensure))
   :config
+  (add-to-list 'eglot-server-programs
+                       `(rust-mode . ("rust-analyzer" :initializationOptions
+                                     ( :procMacro (:enable t)
+                                       :cargo ( :buildScripts (:enable t)
+                                                :features "all")))))
   (setq-default eglot-workspace-configuration
                 '((:pylsp . (:configurationSources ["flake8"]
                              :plugins (
@@ -198,6 +255,9 @@
                                        :black (:enabled t
                                                :line_length 88
                                                :cache_config t)))))))
+
+(use-package cape
+  :ensure t)
 
 ;; Add extra context to Emacs documentation to help make it easier to
 ;; search and understand. This configuration uses the keybindings 
@@ -228,24 +288,17 @@
    ("C-c n f" . denote-open-or-create)
    ("C-c n i" . denote-link)))
 
+(use-package transient
+  :ensure t)
+
 ;; An extremely feature-rich git client. Activate it with "C-c g".
 (use-package magit
   :ensure t
+  :after transient
   :bind (("C-c g" . magit-status)))
 
-;; In addition to installing packages from the configured package
-;; registries, you can also install straight from version control
-;; with the :vc keyword argument. For the full list of supported
-;; fetchers, view the documentation for the variable
-;; `vc-use-package-fetchers'.
-;;
-;; Breadcrumb adds, well, breadcrumbs to the top of your open buffers
-;; and works great with project.el, the Emacs project manager.
-;;
-;; Read more about projects here:
-;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
-  :vc (:fetcher github :repo joaotavora/breadcrumb)
+  :ensure t
   :init (breadcrumb-mode))
 
 ;; As you've probably noticed, Lisp has a lot of parentheses.
@@ -286,17 +339,38 @@
   :init
   (setq markdown-command "multimarkdown"))
 
+
 (use-package rust-mode
   :ensure t
-  :bind (:map rust-mode-map
-	      ("C-c C-r" . 'rust-run)
-	      ("C-c C-c" . 'rust-compile)
-	      ("C-c C-f" . 'rust-format-buffer)
-	      ("C-c C-t" . 'rust-test))
-  :hook (rust-mode . prettify-symbols-mode))
+  :init
+  (setq rust-mode-treesitter-derive t)
+  (setq rust-format-on-save t))
+  ;; :bind (:map rust-mode-map))
+  ;;             ("C-c C-r" . 'rust-run)
+  ;;             ("C-c C-c" . 'rust-compile)
+  ;;             ("C-c C-f" . 'rust-format-buffer)
+  ;;             ("C-c C-t" . 'rust-test))
+  ;; :hook (rust-mode . prettify-symbols-mode))
 
-(use-package yaml-mode
-  :ensure t)
+(use-package flycheck-rust
+  :ensure t
+  :hook (rust-mode-hook . flycheck-rust-setup))
+
+
+;; (elpaca
+;;   (rustowlsp
+;;     :host github
+;;     :repo "cordx56/rustowl"
+;;     :files (:defaults "emacs/*")))
+;; (use-package rustowlsp
+;;   :ensure (:host github :repo "cordx56/rustowl" :files (:defaults "emacs/*")))
+
+
+
+(use-package toml-mode :ensure)
+
+
+(use-package yaml-mode :ensure t)
 
 ;; Installing company mode
 (use-package company
@@ -315,6 +389,54 @@
   :after (flycheck eglot)
   :config
   (global-flycheck-eglot-mode 1))
+
+(use-package web-mode
+  :ensure t
+  :mode
+  (("\\.phtml\\'" . web-mode)
+   ("\\.php\\'" . web-mode)
+   ("\\.tpl\\'" . web-mode)
+   ("\\.tmpl\\'" . web-mode)
+   ("\\.[agj]sp\\'" . web-mode)
+   ("\\.as[cp]x\\'" . web-mode)
+   ("\\.erb\\'" . web-mode)
+   ("\\.mustache\\'" . web-mode)
+   ("\\.djhtml\\'" . web-mode))
+  :config
+  (setq web-mode-engines-alist '(("django" . "\\.tmpl\\'"))))
+;; disable {} auto pairing in electric-pair-mode for web-mode
+(add-hook
+ 'web-mode-hook
+ (lambda ()
+   (setq-local electric-pair-inhibit-predicate
+               `(lambda (c)
+                  (if (char-equal c ?{) t (,electric-pair-inhibit-predicate c))))))
+
+;; Rainbow parentheses
+(use-package rainbow-delimiters
+  :ensure t
+  :defer t
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
+
+
+(use-package emacs
+  :custom
+  ;; TAB cycle if there are only few candidates
+  (completion-cycle-threshold 3)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (tab-always-indent 'complete)
+
+  ;; Emacs 30 and newer: Disable Ispell completion function.
+  ;; Try `cape-dict' as an alternative.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p))
 
 
 ;; (use-package pyvenv

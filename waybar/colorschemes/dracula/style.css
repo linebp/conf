@@ -1,18 +1,37 @@
-/* owlphin color scheme based on Dracula color scheme (https://draculatheme.com/) */
+@define-color bg-lighter #424450;
+@define-color bg-light #343746;
+@define-color bg-dark #21222C;
+@define-color bg-darker #191A21;
 
-@define-color bg-color #282a36;
-@define-color fg-color #f8f8f2;
-@define-color accent-color #bd93f9;
+@define-color fg #f8f8f2;
 
-@define-color bg-color-transparent rgba(40,42,54,0.93);
+/* Information, links */
+@define-color cyan #0081D6;
+/* Success states */
+@define-color green #089108;
+/* Warnings, notifications */
+@define-color orange #A39514;
+/* Focus indicators */
+@define-color purple #815CD6;
+/* Critical actions, alerts */
+@define-color red #de5735;
+/* Text selection */
+@define-color selection #44475A;
 
-@define-color fg-dark #44475a;
 
-@define-color selected-bg-color @accent-color;
-@define-color selected-fg-color @fg-dark;
-@define-color tray-bg-color @accent-color;
-@define-color tray-fg-color @fg-dark;
-@define-color bar-bg-color @bg-color;
-@define-color terminal-bg-color @bg-color-transparent;
+@define-color bg-color @bg-dark;
+@define-color fg-color @fg;
+@define-color accent-color @purple;
+
+/* @define-color bg-color-transparent rgba(40,42,54,0.93); */
+
+/* @define-color fg-dark @orange; */
+
+@define-color selected-bg-color @bg-lighter;
+@define-color selected-fg-color @cyan;
+@define-color tray-bg-color @bg-lighter;
+@define-color tray-fg-color @fg;
+@define-color bar-bg-color @bg-light;
+/* @define-color terminal-bg-color @bg; */
 
 @import url("app.css");

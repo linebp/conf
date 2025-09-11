@@ -1,14 +1,14 @@
-include catppuccin-mocha
+include dracula
 
 xwayland enable
 
 font pango:FireCode Nerd Font Regular 4px
 
-default_border pixel 1
+default_border pixel 2
 gaps inner  0
 gaps outer  3
-smart_borders on
-# smart_gaps on
+smart_borders off
+smart_gaps off
 
 # assign 		[app_id="librewolf"] 		    1
 # assign 		[app_id="org.pwmt.zathura"] 4
@@ -42,11 +42,6 @@ bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
 bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
-# bindsym XF86MonBrightnessUp exec light -A 5
-# bindsym XF86MonBrightnessDown exec light -U 5
-# bindsym XF86AudioPlay exec playerctl play-pause
-# bindsym XF86AudioNext exec playerctl next
-# bindsym XF86AudioPrev exec playerctl previous
 
 output * adaptive_sync on
 output HDMI-A-2 pos 0 0 
@@ -55,45 +50,27 @@ output eDP-1 pos 2560 0
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 
-# for_window [app_id="mpv"]                        floating enable 
-# for_window [app_id="mpv"]                        resize set height 540
-# for_window [app_id="mpv"]                        resize set width 960
-# for_window [app_id="keepassxc"]                  floating enable
-
 focus_follows_mouse yes
 
 exec dbus-daemon --session --address=unix:path=$XDG_RUNTIME_DIR/bus &
-# exec mako
-# exec swaycons
-# exec fcitx5
-exec_always  --no-startup-id  swaybg -i ~/Downloads/11356475.png
-# exec_always  --no-startup-id  nm-applet --indicator &
-# exec_always  --no-startup-id  syncthing &
-# exec_always  --no-startup-id  autotiling-rs &
-# exec  --no-startup-id  redshift -l 25.348766:55.405403 &
-# exec_always  --no-startup-id  ~/.config/waybar/launch_waybar.sh &
-# exec sworkstyle &> /tmp/sworkstyle.log
-# exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+output "*" bg ./backgrounds/dracula-leaves-6272a4-dark.png fill
+exec_always  --no-startup-id  nm-applet --indicator &
 
-# set $gnome-schema org.gnome.desktop.interface
-seat seat0 xcursor_theme Catppuccin-Mocha-Dark-Cursors
-# exec_always {
-#     gsettings set $gnome-schema gtk-theme 'Catppuccin-Mocha-Standard-Rosewater-Dark'
-#     gsettings set $gnome-schema icon-theme 'Papirus-Dark'
-#     gsettings set $gnome-schema cursor-theme 'Catppuccin-Mocha-Light-Cursors'
-#     gsettings set $gnome-schema font-name 'FiraCode Nerd Font Regular 11'
-# }
+exec_always {
+    gsettings set org.gnome.desktop.interface gtk-theme 'Dracula'
+    gsettings set org.gnome.desktop.interface icon-theme 'Dracula'
+    gsettings set $gnome-schema font-name 'FiraCode Nerd Font Regular 11'
+}
 
- # target                 title     bg    text   indicator  border
-client.focused           $pink     $base $text  $rosewater $pink
-client.focused_inactive  $mauve    $base $text  $rosewater $mauve
-client.unfocused         $mauve    $base $text  $rosewater $mauve
-client.urgent            $peach    $base $peach $overlay0  $peach
-client.placeholder       $overlay0 $base $text  $overlay0  $overlay0
-client.background        $base
+# Configures the color of window borders and title bars. The first three
+# colors are required. When omitted indicator will use a sane default
+# and child_border will use the color set for background
+# client.<class>            <border>  <background>      <text>  [<indicator>    [<child_border>]]
+client.focused              $purple   $bg1              $text   $bg2            $purple
+client.focused_inactive     $bg1      $bg4              $text
+client.unfocused            $bg1      $bg4              $text
 
-# PROTIP: You can also dynamically set dmenu's colors this way:
-# bindsym $mod+v exec dmenu_run -nb "$rosewater" -nf "$base" -sb "$base" -sf "$rosewater"
+
 
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -220,7 +197,7 @@ floating_modifier $mod normal
 #-------------#
 ## hide | show window(minus is "-" and plus is "+".)
 bindsym $mod+minus move scratchpad
-bindsym $mod+equal scratchpad show
+bindsym $mod+plus scratchpad show 
 
 #----------------------#
 # Resizing containers: #
@@ -256,8 +233,4 @@ bindsym Shift+Ctrl+Up            resize grow   height 5 px or 5 ppt
 bindsym Shift+Ctrl+Down          resize shrink height 5 px or 5 ppt
 bindsym Shift+Ctrl+Right         resize grow   width  5 px or 5 ppt
 
-exec waybar -c ~/.config/waybar/config-sway
-
-# bar {
-#     swaybar_command waybar
-# }
+exec waybar -c ~/.config/waybar/config

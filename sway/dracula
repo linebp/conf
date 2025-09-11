@@ -1,0 +1,23 @@
+# Default text
+set $text #f8f8f2
+# Floating interactive elements
+set $floating #343746
+# Background Lighter
+set $bg1 #424450
+# Background Light
+set $bg2 #343746
+# Background Dark
+set $bg3 #21222C
+# Background Darker
+set $bg4 #191A21
+# Critical actions, alerts
+set $red #de5735
+# Warnings, notifications
+set $orange #A39514
+# Success states
+set $green #089108
+# Information, links
+set $cyan #0081D6
+# Focus indicators
+set $purple #815CD6
+

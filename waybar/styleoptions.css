@@ -1,6 +1,6 @@
 /* Use a color scheme */
 
-@import url("colorschemes/catppuccin-macchiato/style.css");
+@import url("colorschemes/dracula/style.css");
 
 /* Modify a colorscheme for example we can change accent color to Rosé Pine's Love */
 
@@ -22,11 +22,11 @@
 
 /* disable dynamic coloring */
 
-window#waybar.solo {
-  background: transparent;
-}
+/* window#waybar.solo { */
+/*   background: transparent; */
+/* } */
 
-window#waybar.empty #window,
-window#waybar.solo #window {
-  background: @bar-bg-color;
-}
+/* window#waybar.empty #window, */
+/* window#waybar.solo #window { */
+/*   background: @bar-bg-color; */
+/* } */
