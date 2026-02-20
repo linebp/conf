@@ -2,7 +2,7 @@ include dracula
 
 xwayland enable
 
-font pango:FireCode Nerd Font Regular 4px
+font pango:Iosevka Nerd Font Propo 8px
 
 default_border pixel 2
 gaps inner  0
@@ -52,14 +52,15 @@ exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activati
 
 focus_follows_mouse yes
 
-exec dbus-daemon --session --address=unix:path=$XDG_RUNTIME_DIR/bus &
+exec dbus-daemon --session --address=unix:path=$XDG_RUNTIME_DIR/bus
 output "*" bg ./backgrounds/dracula-leaves-6272a4-dark.png fill
-exec_always  --no-startup-id  nm-applet --indicator &
+# Network manager applet so it appears in the systemtray
+exec_always  --no-startup-id  nm-applet --indicator
 
 exec_always {
     gsettings set org.gnome.desktop.interface gtk-theme 'Dracula'
     gsettings set org.gnome.desktop.interface icon-theme 'Dracula'
-    gsettings set $gnome-schema font-name 'FiraCode Nerd Font Regular 11'
+    gsettings set $gnome-schema font-name 'Iosevka Nerd Font Regular 11'
 }
 
 # Configures the color of window borders and title bars. The first three
@@ -85,8 +86,8 @@ exec swayidle -w \
     # You can get the names of your inputs by running: swaymsg -t get_inputs
     # Read `man 5 sway-input` for more information about this section.
 input "type:keyboard" {
-        xkb_layout "dk"
-        xkb_variant "winkeys"
+        xkb_layout us,dk(winkeys)
+        xkb_options grp:rctrl_toggle
 }
 
 input "type:touchpad" {

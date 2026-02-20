@@ -10,6 +10,7 @@
     "wlr/taskbar"
   ],
   "modules-right": [
+    "sway/language",
     "load",
     "memory",
     "bluetooth",
@@ -20,7 +21,10 @@
     "clock",
     "tray",
     "custom/power"
-  ],
+  ],  
+  "sway/language" : {
+    "format" : "\uf11c {flag}"
+  },  
   "load": {
     "format": " {load1}"
   },
@@ -136,5 +140,5 @@
     "format":"⏻",
     "on-click": "exec ~/.config/waybar/scripts/power-menu.sh",
     "tooltip": false
-  }
+  },
 }

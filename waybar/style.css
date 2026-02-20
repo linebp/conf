@@ -1,5 +1,5 @@
 * {
-    font-family: FiraCode Nerd Font Propo;
+    font-family: Iosevka Nerd Font Propo;
     font-size: 16px;
     border: none;
     border-radius: 0;
@@ -24,7 +24,8 @@ window#waybar {
 #taskbar button,
 #tray,
 #custom-power,
-#gamemode
+#gamemode,
+#language
 {
     padding: 0px 8px;
     background-color: @bg-dark;
